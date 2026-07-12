@@ -69,72 +69,67 @@ EOT
     backend_request = optional(object({
       body_bytes = optional(number)
       data_masking = optional(object({
-        headers = optional(object({
+        headers = optional(list(object({
           mode  = string
           value = string
-        }))
-        query_params = optional(object({
+        })))
+        query_params = optional(list(object({
           mode  = string
           value = string
-        }))
+        })))
       }))
       headers_to_log = optional(set(string))
     }))
     backend_response = optional(object({
       body_bytes = optional(number)
       data_masking = optional(object({
-        headers = optional(object({
+        headers = optional(list(object({
           mode  = string
           value = string
-        }))
-        query_params = optional(object({
+        })))
+        query_params = optional(list(object({
           mode  = string
           value = string
-        }))
+        })))
       }))
       headers_to_log = optional(set(string))
     }))
     frontend_request = optional(object({
       body_bytes = optional(number)
       data_masking = optional(object({
-        headers = optional(object({
+        headers = optional(list(object({
           mode  = string
           value = string
-        }))
-        query_params = optional(object({
+        })))
+        query_params = optional(list(object({
           mode  = string
           value = string
-        }))
+        })))
       }))
       headers_to_log = optional(set(string))
     }))
     frontend_response = optional(object({
       body_bytes = optional(number)
       data_masking = optional(object({
-        headers = optional(object({
+        headers = optional(list(object({
           mode  = string
           value = string
-        }))
-        query_params = optional(object({
+        })))
+        query_params = optional(list(object({
           mode  = string
           value = string
-        }))
+        })))
       }))
       headers_to_log = optional(set(string))
     }))
   }))
-  validation {
-    condition = alltrue([
-      for k, v in var.api_management_diagnostics : (
-        contains(["applicationinsights", "azuremonitor"], v.identifier)
-      )
-    ])
-    error_message = "must be one of: applicationinsights, azuremonitor"
-  }
   # --- Unconfirmed validation candidates, derived from azurerm_api_management_diagnostic's provider source ---
   # Not auto-enabled: either a bespoke provider validator we can't safely translate,
   # or a path that crosses a list-typed block (needs its own for_each wrapping).
   # Review, translate into a real validation{} block above, and delete once confirmed.
+  # path: identifier
+  #   condition: contains(["applicationinsights", "azuremonitor"], value)
+  #   message:   must be one of: applicationinsights, azuremonitor
   # path: resource_group_name
   #   condition: length(value) <= 90
   #   message:   [from resourcegroups.ValidateName: invalid when len(value) > 90]
