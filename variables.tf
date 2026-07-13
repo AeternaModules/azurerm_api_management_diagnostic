@@ -156,6 +156,58 @@ EOT
   #   source:    validation.StringInSlice value list is not a literal []string - likely a generated PossibleValuesFor*() helper; resolve separately
   # path: http_correlation_protocol
   #   source:    validation.StringInSlice value list is not a literal []string - likely a generated PossibleValuesFor*() helper; resolve separately
+  # path: frontend_request.body_bytes
+  #   condition: value >= 0 && value <= 8192
+  #   message:   must be between 0 and 8192
+  # path: frontend_request.data_masking.query_params.mode
+  #   source:    validation.StringInSlice value list is not a literal []string - likely a generated PossibleValuesFor*() helper; resolve separately
+  # path: frontend_request.data_masking.query_params.value
+  #   condition: length(value) > 0
+  #   message:   must not be empty
+  # path: frontend_request.data_masking.headers.mode
+  #   source:    validation.StringInSlice value list is not a literal []string - likely a generated PossibleValuesFor*() helper; resolve separately
+  # path: frontend_request.data_masking.headers.value
+  #   condition: length(value) > 0
+  #   message:   must not be empty
+  # path: frontend_response.body_bytes
+  #   condition: value >= 0 && value <= 8192
+  #   message:   must be between 0 and 8192
+  # path: frontend_response.data_masking.query_params.mode
+  #   source:    validation.StringInSlice value list is not a literal []string - likely a generated PossibleValuesFor*() helper; resolve separately
+  # path: frontend_response.data_masking.query_params.value
+  #   condition: length(value) > 0
+  #   message:   must not be empty
+  # path: frontend_response.data_masking.headers.mode
+  #   source:    validation.StringInSlice value list is not a literal []string - likely a generated PossibleValuesFor*() helper; resolve separately
+  # path: frontend_response.data_masking.headers.value
+  #   condition: length(value) > 0
+  #   message:   must not be empty
+  # path: backend_request.body_bytes
+  #   condition: value >= 0 && value <= 8192
+  #   message:   must be between 0 and 8192
+  # path: backend_request.data_masking.query_params.mode
+  #   source:    validation.StringInSlice value list is not a literal []string - likely a generated PossibleValuesFor*() helper; resolve separately
+  # path: backend_request.data_masking.query_params.value
+  #   condition: length(value) > 0
+  #   message:   must not be empty
+  # path: backend_request.data_masking.headers.mode
+  #   source:    validation.StringInSlice value list is not a literal []string - likely a generated PossibleValuesFor*() helper; resolve separately
+  # path: backend_request.data_masking.headers.value
+  #   condition: length(value) > 0
+  #   message:   must not be empty
+  # path: backend_response.body_bytes
+  #   condition: value >= 0 && value <= 8192
+  #   message:   must be between 0 and 8192
+  # path: backend_response.data_masking.query_params.mode
+  #   source:    validation.StringInSlice value list is not a literal []string - likely a generated PossibleValuesFor*() helper; resolve separately
+  # path: backend_response.data_masking.query_params.value
+  #   condition: length(value) > 0
+  #   message:   must not be empty
+  # path: backend_response.data_masking.headers.mode
+  #   source:    validation.StringInSlice value list is not a literal []string - likely a generated PossibleValuesFor*() helper; resolve separately
+  # path: backend_response.data_masking.headers.value
+  #   condition: length(value) > 0
+  #   message:   must not be empty
   # path: operation_name_format
   #   source:    validation.StringInSlice value list is not a literal []string - likely a generated PossibleValuesFor*() helper; resolve separately
 }
