@@ -123,92 +123,142 @@ EOT
       headers_to_log = optional(set(string))
     }))
   }))
-  # --- Unconfirmed validation candidates, derived from azurerm_api_management_diagnostic's provider source ---
-  # Not auto-enabled: either a bespoke provider validator we can't safely translate,
-  # or a path that crosses a list-typed block (needs its own for_each wrapping).
-  # Review, translate into a real validation{} block above, and delete once confirmed.
-  # path: identifier
-  #   condition: contains(["applicationinsights", "azuremonitor"], value)
-  #   message:   must be one of: applicationinsights, azuremonitor
-  # path: resource_group_name
-  #   condition: length(value) <= 90
-  #   message:   [from resourcegroups.ValidateName: invalid when len(value) > 90]
-  #   source:    [from resourcegroups.ValidateName: invalid when len(value) > 90]
-  # path: resource_group_name
-  #   condition: !endswith(value, ".")
-  #   message:   [from resourcegroups.ValidateName: must not end with "."]
-  #   source:    [from resourcegroups.ValidateName: must not end with "."]
-  # path: resource_group_name
-  #   condition: length(value) != 0
-  #   message:   [from resourcegroups.ValidateName: invalid when len(value) == 0]
-  #   source:    [from resourcegroups.ValidateName: invalid when len(value) == 0]
-  # path: resource_group_name
-  #   source:    [from resourcegroups.ValidateName] !matched
-  # path: api_management_name
-  #   source:    [from validate.ApiManagementServiceName] !matched
-  # path: api_management_logger_id
-  #   source:    [from logger.ValidateLoggerID] !ok
-  # path: api_management_logger_id
-  #   source:    [from logger.ValidateLoggerID] err != nil
-  # path: sampling_percentage
-  #   source:    validation.FloatBetween(...) - no translation rule yet, add one
-  # path: verbosity
-  #   source:    validation.StringInSlice value list is not a literal []string - likely a generated PossibleValuesFor*() helper; resolve separately
-  # path: http_correlation_protocol
-  #   source:    validation.StringInSlice value list is not a literal []string - likely a generated PossibleValuesFor*() helper; resolve separately
-  # path: frontend_request.body_bytes
-  #   condition: value >= 0 && value <= 8192
-  #   message:   must be between 0 and 8192
-  # path: frontend_request.data_masking.query_params.mode
-  #   source:    validation.StringInSlice value list is not a literal []string - likely a generated PossibleValuesFor*() helper; resolve separately
-  # path: frontend_request.data_masking.query_params.value
-  #   condition: length(value) > 0
-  #   message:   must not be empty
-  # path: frontend_request.data_masking.headers.mode
-  #   source:    validation.StringInSlice value list is not a literal []string - likely a generated PossibleValuesFor*() helper; resolve separately
-  # path: frontend_request.data_masking.headers.value
-  #   condition: length(value) > 0
-  #   message:   must not be empty
-  # path: frontend_response.body_bytes
-  #   condition: value >= 0 && value <= 8192
-  #   message:   must be between 0 and 8192
-  # path: frontend_response.data_masking.query_params.mode
-  #   source:    validation.StringInSlice value list is not a literal []string - likely a generated PossibleValuesFor*() helper; resolve separately
-  # path: frontend_response.data_masking.query_params.value
-  #   condition: length(value) > 0
-  #   message:   must not be empty
-  # path: frontend_response.data_masking.headers.mode
-  #   source:    validation.StringInSlice value list is not a literal []string - likely a generated PossibleValuesFor*() helper; resolve separately
-  # path: frontend_response.data_masking.headers.value
-  #   condition: length(value) > 0
-  #   message:   must not be empty
-  # path: backend_request.body_bytes
-  #   condition: value >= 0 && value <= 8192
-  #   message:   must be between 0 and 8192
-  # path: backend_request.data_masking.query_params.mode
-  #   source:    validation.StringInSlice value list is not a literal []string - likely a generated PossibleValuesFor*() helper; resolve separately
-  # path: backend_request.data_masking.query_params.value
-  #   condition: length(value) > 0
-  #   message:   must not be empty
-  # path: backend_request.data_masking.headers.mode
-  #   source:    validation.StringInSlice value list is not a literal []string - likely a generated PossibleValuesFor*() helper; resolve separately
-  # path: backend_request.data_masking.headers.value
-  #   condition: length(value) > 0
-  #   message:   must not be empty
-  # path: backend_response.body_bytes
-  #   condition: value >= 0 && value <= 8192
-  #   message:   must be between 0 and 8192
-  # path: backend_response.data_masking.query_params.mode
-  #   source:    validation.StringInSlice value list is not a literal []string - likely a generated PossibleValuesFor*() helper; resolve separately
-  # path: backend_response.data_masking.query_params.value
-  #   condition: length(value) > 0
-  #   message:   must not be empty
-  # path: backend_response.data_masking.headers.mode
-  #   source:    validation.StringInSlice value list is not a literal []string - likely a generated PossibleValuesFor*() helper; resolve separately
-  # path: backend_response.data_masking.headers.value
-  #   condition: length(value) > 0
-  #   message:   must not be empty
-  # path: operation_name_format
-  #   source:    validation.StringInSlice value list is not a literal []string - likely a generated PossibleValuesFor*() helper; resolve separately
+  validation {
+    condition = alltrue([
+      for k, v in var.api_management_diagnostics : (
+        contains(["applicationinsights", "azuremonitor"], v.identifier)
+      )
+    ])
+    error_message = "must be one of: applicationinsights, azuremonitor"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.api_management_diagnostics : (
+        length(v.resource_group_name) <= 90
+      )
+    ])
+    error_message = "[from resourcegroups.ValidateName: invalid when len(value) > 90]"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.api_management_diagnostics : (
+        !endswith(v.resource_group_name, ".")
+      )
+    ])
+    error_message = "[from resourcegroups.ValidateName: must not end with \".\"]"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.api_management_diagnostics : (
+        length(v.resource_group_name) != 0
+      )
+    ])
+    error_message = "[from resourcegroups.ValidateName: invalid when len(value) == 0]"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.api_management_diagnostics : (
+        v.sampling_percentage == null || (v.sampling_percentage >= 0.0 && v.sampling_percentage <= 100.0)
+      )
+    ])
+    error_message = "must be between 0.0 and 100.0"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.api_management_diagnostics : (
+        v.frontend_request == null || (v.frontend_request.body_bytes == null || (v.frontend_request.body_bytes >= 0 && v.frontend_request.body_bytes <= 8192))
+      )
+    ])
+    error_message = "must be between 0 and 8192"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.api_management_diagnostics : (
+        v.frontend_request == null || (v.frontend_request.data_masking == null || (v.frontend_request.data_masking.query_params == null || alltrue([for item in v.frontend_request.data_masking.query_params : (length(item.value) > 0)])))
+      )
+    ])
+    error_message = "must not be empty"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.api_management_diagnostics : (
+        v.frontend_request == null || (v.frontend_request.data_masking == null || (v.frontend_request.data_masking.headers == null || alltrue([for item in v.frontend_request.data_masking.headers : (length(item.value) > 0)])))
+      )
+    ])
+    error_message = "must not be empty"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.api_management_diagnostics : (
+        v.frontend_response == null || (v.frontend_response.body_bytes == null || (v.frontend_response.body_bytes >= 0 && v.frontend_response.body_bytes <= 8192))
+      )
+    ])
+    error_message = "must be between 0 and 8192"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.api_management_diagnostics : (
+        v.frontend_response == null || (v.frontend_response.data_masking == null || (v.frontend_response.data_masking.query_params == null || alltrue([for item in v.frontend_response.data_masking.query_params : (length(item.value) > 0)])))
+      )
+    ])
+    error_message = "must not be empty"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.api_management_diagnostics : (
+        v.frontend_response == null || (v.frontend_response.data_masking == null || (v.frontend_response.data_masking.headers == null || alltrue([for item in v.frontend_response.data_masking.headers : (length(item.value) > 0)])))
+      )
+    ])
+    error_message = "must not be empty"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.api_management_diagnostics : (
+        v.backend_request == null || (v.backend_request.body_bytes == null || (v.backend_request.body_bytes >= 0 && v.backend_request.body_bytes <= 8192))
+      )
+    ])
+    error_message = "must be between 0 and 8192"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.api_management_diagnostics : (
+        v.backend_request == null || (v.backend_request.data_masking == null || (v.backend_request.data_masking.query_params == null || alltrue([for item in v.backend_request.data_masking.query_params : (length(item.value) > 0)])))
+      )
+    ])
+    error_message = "must not be empty"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.api_management_diagnostics : (
+        v.backend_request == null || (v.backend_request.data_masking == null || (v.backend_request.data_masking.headers == null || alltrue([for item in v.backend_request.data_masking.headers : (length(item.value) > 0)])))
+      )
+    ])
+    error_message = "must not be empty"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.api_management_diagnostics : (
+        v.backend_response == null || (v.backend_response.body_bytes == null || (v.backend_response.body_bytes >= 0 && v.backend_response.body_bytes <= 8192))
+      )
+    ])
+    error_message = "must be between 0 and 8192"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.api_management_diagnostics : (
+        v.backend_response == null || (v.backend_response.data_masking == null || (v.backend_response.data_masking.query_params == null || alltrue([for item in v.backend_response.data_masking.query_params : (length(item.value) > 0)])))
+      )
+    ])
+    error_message = "must not be empty"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.api_management_diagnostics : (
+        v.backend_response == null || (v.backend_response.data_masking == null || (v.backend_response.data_masking.headers == null || alltrue([for item in v.backend_response.data_masking.headers : (length(item.value) > 0)])))
+      )
+    ])
+    error_message = "must not be empty"
+  }
+  # Note: 15 additional provider-side validators are enforced at apply time but not mirrored as validation{} blocks here (bespoke or non-mechanically-translatable).
 }
 
